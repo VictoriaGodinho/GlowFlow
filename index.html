@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GlowFlow · Interactive AI Tasking Guide</title>
+  <style>
+    :root{
+      --bg:#0f0f12;
+      --card:#15161b;
+      --ink:#ffffff;
+      --muted:#b9bdc7;
+      --accent1:#F8D5E1;
+      --accent2:#E6DAF6;
+      --accent3:#FFF3E7;
+      --accent4:#E2ECE5;
+      --accent5:#1E1E24;
+      --radius:16px;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,"Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 600px at 20% -10%,rgba(248,213,225,.18),transparent 60%),
+        radial-gradient(900px 500px at 110% 10%,rgba(230,218,246,.16),transparent 60%),
+        linear-gradient(180deg,#0f0f12,#111218);
+    }
+    header{
+      position:sticky;top:0;z-index:5;backdrop-filter:blur(8px);
+      background:linear-gradient(180deg,rgba(17,18,24,.8),rgba(17,18,24,.6));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .container{max-width:1100px;margin:0 auto;padding:20px;}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 30% 30%,var(--accent1),var(--accent2));box-shadow:0 0 40px rgba(246,221,244,.35)}
+    .title{font-weight:700;letter-spacing:.2px}
+    .sub{color:var(--muted);font-size:.95rem}
+    .highlight{
+      background:linear-gradient(90deg,var(--accent1),var(--accent2));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      font-weight:600;
+    }
+
+    .steps{display:flex;gap:10px;overflow:auto;padding:10px 0 8px}
+    .chip{
+      user-select:none;white-space:nowrap;cursor:pointer;padding:10px 14px;
+      border-radius:999px;border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);color:var(--ink);transition:.2s transform,.2s background;
+    }
+    .chip:hover{transform:translateY(-1px);background:rgba(255,255,255,.06)}
+    .chip.active{background:linear-gradient(90deg,rgba(248,213,225,.25),rgba(230,218,246,.25));border-color:transparent;}
+
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:start}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card .pad{padding:20px}
+
+    h2{margin:0 0 10px}
+    h3{margin:0 0 8px;font-size:1.05rem}
+    p{color:#e9ecf4;line-height:1.6}
+    .muted{color:var(--muted)}
+
+    .tags{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+    .tag{font-size:.8rem;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
+    .tag.automate{background:rgba(226,236,229,.18);border-color:rgba(226,236,229,.4);color:#d9f7e1}
+    .tag.augment{background:rgba(248,213,225,.15);border-color:rgba(248,213,225,.35);color:#ffe8f3}
+
+    .statrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+    .stat{flex:1;min-width:180px;padding:14px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+
+    .toolpill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin:4px 6px 0 0;font-size:.85rem}
+    .toolpill svg{width:14px;height:14px}
+
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px}
+    .gallery img{width:100%;height:110px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:transform .2s;}
+    .gallery img:hover{transform:scale(1.02);}
+
+    .gallery .btn{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:10px;
+      color:#fff;font-size:.9rem;transition:.2s;
+    }
+    .gallery .btn:hover{
+      background:linear-gradient(90deg,var(--accent1),var(--accent2));
+      color:#141419;
+    }
+
+    .controls{display:flex;justify-content:space-between;gap:10px;padding:14px}
+    .btn{cursor:pointer;padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--ink)}
+    .btn.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#141419;border:none;font-weight:600}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .kicker{font-size:.9rem;color:var(--muted)}
+
+    /* --- Fullscreen Modal --- */
+    .lightbox{
+      position:fixed;inset:0;background:rgba(0,0,0,.85);
+      display:flex;align-items:center;justify-content:center;
+      z-index:1000;visibility:hidden;opacity:0;transition:.3s;
+    }
+    .lightbox.active{visibility:visible;opacity:1;}
+    .lightbox img{
+      max-width:90%;max-height:90%;border-radius:12px;
+      box-shadow:0 0 40px rgba(0,0,0,.6);
+    }
+    .lightbox:after{
+      content:"✕";position:absolute;top:20px;right:30px;font-size:2rem;color:#fff;cursor:pointer;
+    }
+
+    @media (max-width:880px){
+      .grid{grid-template-columns:1fr}
+      .gallery{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <div class="title">GlowFlow — AI Tasking Guide for Beauty UX</div>
+          <div class="sub">A step-by-step, interactive walkthrough of how a UX designer collaborates with AI to build a <span class="highlight">digital moodboard</span> for <em>Lumi</em>.</div>
+        </div>
+      </div>
+      <div id="stepNav" class="steps" aria-label="Task steps navigation"></div>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top:18px">
+    <div class="grid" id="gridLayout">
+      <section class="card" aria-live="polite" id="leftCard">
+        <div class="pad">
+          <div class="kicker" id="stepKicker">TASK 1</div>
+          <h2 id="stepTitle">Gather visual inspiration</h2>
+          <div class="tags" id="tags"></div>
+          <p id="stepDesc"></p>
+          <div class="statrow" id="statsSection">
+            <div class="stat" id="toolsCard">
+              <h3>Tools used</h3>
+              <div id="tools"></div>
+            </div>
+            <div class="stat" id="outputCard">
+              <h3>Output</h3>
+              <p id="output" class="muted"></p>
+            </div>
+          </div>
+        </div>
+        <div class="controls">
+          <button id="prevBtn" class="btn">← Previous</button>
+          <button id="nextBtn" class="btn primary">Next →</button>
+        </div>
+      </section>
+      <aside class="card" id="rightCard">
+        <div class="pad" id="evidenceHeader">
+          <h3 style="margin-bottom:6px">Artifacts & Evidence</h3>
+          <p class="muted" id="evidenceDesc"></p>
+        </div>
+        <div id="gallery" class="gallery"></div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox"><img src="" alt="Enlarged artifact"></div>
+
+  <script>
+    const tasks=[
+     {
+  id:1,
+  title:"Gather visual inspiration",
+  kicker:"TASK 1",
+  typeOfAction:"Automate",
+  aiRole:["Leonardo AI → image generation","Pinterest → reference sourcing"],
+  description:"Kick off with wide exploration. Generate skincare still-lifes, portrait references, and textures with Leonardo AI; complement with Pinterest boards for real-world references. Human judgement filters what feels authentic to the brand.",
+  output:"A pool of images: product still-lifes, inclusive portraits, texture macros, gradient atmospheres.",
+  tools:[
+    {name:"Leonardo AI",url:"https://leonardo.ai"},
+    {name:"Pinterest",url:"https://www.pinterest.com"}
+  ],
+  evidenceDesc:"The first 9 images were generated in Leonardo AI using detailed prompts to explore tone and texture. The next 9 were manually selected from Pinterest, adding human intuition and context.",
+  images:[
+    "images/inspiration1.jpg","images/inspiration2.jpg","images/inspiration3.jpg",
+    "images/inspiration4.jpg","images/inspiration5.jpg","images/inspiration6.jpg",
+    "images/inspiration7.jpg","images/inspiration8.jpg","images/inspiration9.jpg",
+    "images/inspiration10.jpg","images/inspiration11.jpg","images/inspiration12.jpg",
+    "images/inspiration13.jpg","images/inspiration14.jpg","images/inspiration15.jpg",
+    "images/inspiration16.jpg","images/inspiration17.jpg","images/inspiration18.jpg"
+  ]
+},
+
+      {
+        id:2,title:"Define mood & concept direction",kicker:"TASK 2",typeOfAction:"Augment",
+        aiRole:["Human interpretation"],
+        description:"Defining the mood and concept direction is one of the most human-centered stages of creating a digital moodboard. After collecting AI-generated and Pinterest-sourced images, I interpreted their emotional tone and began grouping them by feeling rather than by subject. Recurrent themes like soft diffused light, pastel tones, and natural textures suggested an atmosphere of trust, calm, and authenticity, qualities central to modern beauty brands. From this reflection emerged three guiding pillars: Soft Science (where precision meets care), Everyday Glow (celebrating natural inclusivity), and Quiet Luxury (a refined minimalism focused on texture and balance). These ideas now inform both Lumi’s brand aesthetic and its UX identity.",
+        output:"Written concept + three pillars to guide all visuals and UX decisions."
+      },
+      {
+        id:3,title:"Generate color palette ideas",kicker:"TASK 3",typeOfAction:"Automate",
+        aiRole:["Khroma → learn my preferences","Coolors → test palette in context"],
+        description:"To shape the color atmosphere, I trained Khroma AI with about fifty tones that reflected my personal aesthetic. It generated custom pairings with strong contrast and natural harmony, creating combinations that worked well together across different moods. I then used Coolors to visualize how these palettes would appear in real digital contexts, refining brightness and saturation to achieve a balanced, emotionally cohesive result.",
+        output:"Final 5-color palette (Blush Rose, Cocoa Taupe, Cream Glow, Sage Mist, and Deep Espresso).",
+        tools:[{name:"Khroma AI",url:"https://khroma.co"},{name:"Coolors",url:"https://coolors.co"}],
+        images:["images/color1.jpg","images/color2.jpg","images/color3.jpg","images/color4.jpg","images/color5.jpg","images/color6.jpg","images/color7.jpg","images/color8.jpg","images/color9.jpg"]
+      },
+      {
+        id:4,title:"Curate & arrange images",kicker:"TASK 4",typeOfAction:"Augment",
+        aiRole:["Milanote smart guides for spacing/alignment"],
+        description:"Using Milanote, I curated and arranged the final imagery into a balanced visual story. The tool smart alignment guides helped with structure, but the overall flow was human-led: organizing textures, product still-lifes, and portraits. Each placement was adjusted manually to reinforce the color palette and emotional rhythm of the brand.",
+        output:"Moodboard layout for LUMI.",
+        tools:[{name:"Milanote",url:"https://milanote.com"}],
+        images:["images/moodboard1.png"]
+      },
+      {
+        id:5,title:"Write moodboard descriptions",kicker:"TASK 5",typeOfAction:"Augment",
+        aiRole:["Optional LLM ideation → human edit"],
+        description:"The Lumi moodboard brings together AI-generated imagery and human-curated design choices to define the brand’s visual and emotional tone. The composition merges product still lifes, portrait photography, and natural ingredient textures to portray skincare as both scientific and sensorial. Each visual plays a different role within the story: editorial portraits express diversity and confidence; still lifes convey clarity and transparency; botanical elements highlight purity and sustainability; and creamy gradients unify the composition, symbolizing softness and touch. After reflecting on these descriptions, I added three short notes directly on my moodboard to guide the tone of the image set. These cues reinforce Lumi’s principle and the kind of aesthetic I love crafting.",
+        output:"Narrative and mood notes used in portfolio/presentation.",
+        tools:[{name:"Milanote",url:"https://milanote.com"}],
+        images:["images/moodboard2.jpg"]
+      },
+      {
+        id:6,title:"Refine & edit moodboard",kicker:"TASK 6",typeOfAction:"Augment",
+        aiRole:["Milanote alignment helpers; human rhythm & cohesion"],
+        description:"After curating and arranging all visuals in Milanote, I entered the refinement stage, focusing on composition, clarity, and emotional consistency. This process involved fine tuning the visual hierarchy, balancing image sizes, aligning elements, and softening transitions between textures and tones. I adjusted the placement of portraits, skincare still-lifes, and gradients to ensure that no single visual dominated the narrative but instead contributed to a unified flow.",
+        output:"Polished composition ready to share.",
+        tools:[{name:"Milanote",url:"https://milanote.com"}]
+      },
+      {
+        id:7,title:"Present final moodboard to team",kicker:"TASK 7",typeOfAction:"Augment",
+        aiRole:["HTML, CSS, and JavaScript → interactive case-study build"],
+        description:"For the final stage of the process, I created GlowFlow — an interactive web experience that documents and presents each phase of the Lumi moodboard creation. Built entirely with HTML, CSS, and JavaScript, this site transforms a traditional presentation into an engaging digital narrative. Rather than relying on static slides, GlowFlow allows viewers to navigate through each task, observe AI and human contributions, and explore artifacts in an intuitive, interactive format. This approach not only demonstrates my design and coding skills but also communicates the creative process with greater clarity, accessibility, and storytelling depth.",
+        output:"Interactive case-study website built with HTML, CSS, and JavaScript.",
+        tools:[{name:"Visual Studio Code",url:"https://code.visualstudio.com"},{name:"GitHub",url:"https://github.com"}],
+        evidenceTitle:"Final Moodboard",
+        images:["images/final_moodboard.png"]
+      }
+    ];
+
+    const stepKicker=document.getElementById('stepKicker');
+    const stepTitle=document.getElementById('stepTitle');
+    const stepDesc=document.getElementById('stepDesc');
+    const tags=document.getElementById('tags');
+    const tools=document.getElementById('tools');
+    const output=document.getElementById('output');
+    const prevBtn=document.getElementById('prevBtn');
+    const nextBtn=document.getElementById('nextBtn');
+    const rightCard=document.getElementById('rightCard');
+    const evidenceDesc=document.getElementById('evidenceDesc');
+    const gallery=document.getElementById('gallery');
+    const statsSection=document.getElementById('statsSection');
+    const lightbox=document.getElementById('lightbox');
+    const lightboxImg=lightbox.querySelector('img');
+
+    let current=0,galleryPage=0;
+    const IMAGES_PER_PAGE=9;
+
+    function toolPill(t){
+      const a=document.createElement('a');
+      a.href=t.url;a.target='_blank';a.rel='noopener';a.className='toolpill';
+      a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>'+t.name;
+      return a;
+    }
+
+    function renderGallery(t){
+      gallery.innerHTML='';
+      if(!t.images){rightCard.style.display='none';return;}
+      rightCard.style.display='block';
+      document.querySelector('#evidenceHeader h3').textContent=t.evidenceTitle||'Artifacts & Evidence';
+      evidenceDesc.textContent=t.evidenceDesc||'';
+
+      // Task 4, 5, and 7 special layout — one big clickable image
+      if(t.id===4 || t.id===5 || t.id===7){
+        gallery.style.display='block';
+        const img=document.createElement('img');
+        img.src=t.images[0];
+        img.alt=t.title+' artifact';
+        img.style.width='100%';
+        img.style.height='auto';
+        img.style.borderRadius='12px';
+        img.style.cursor='pointer';
+        img.style.border='1px solid rgba(255,255,255,.06)';
+        img.onclick=()=>{
+          lightboxImg.src=t.images[0];
+          lightbox.classList.add('active');
+        };
+        gallery.appendChild(img);
+        return;
+      }
+
+      // Default grid layout
+      gallery.style.display='grid';
+      const start=galleryPage*IMAGES_PER_PAGE;
+      const end=start+IMAGES_PER_PAGE;
+      const currentImages=t.images.slice(start,end);
+      currentImages.forEach(src=>{
+        const img=document.createElement('img');
+        img.src=src;img.alt=t.title+' artifact';
+        img.onclick=()=>{
+          lightboxImg.src=src;
+          lightbox.classList.add('active');
+        };
+        gallery.appendChild(img);
+      });
+      if(t.images.length>IMAGES_PER_PAGE){
+        const controls=document.createElement('div');
+        controls.style.display='flex';
+        controls.style.justifyContent='space-between';
+        controls.style.padding='8px 12px';
+        const prev=document.createElement('button');
+        prev.textContent='← Leonardo.AI';
+        prev.className='btn';
+        prev.disabled=galleryPage===0;
+        prev.onclick=()=>{galleryPage--;renderGallery(t)};
+        const next=document.createElement('button');
+        next.textContent='Pinterest images →';
+        next.className='btn';
+        next.disabled=end>=t.images.length;
+        next.onclick=()=>{galleryPage++;renderGallery(t)};
+        controls.appendChild(prev);
+        controls.appendChild(next);
+        gallery.appendChild(controls);
+      }
+    }
+
+    function render(){
+      const t=tasks[current];
+      stepKicker.textContent=t.kicker;
+      stepTitle.textContent=t.title;
+      stepDesc.textContent=t.description;
+      tags.innerHTML='';
+      const role=document.createElement('span');
+      role.className='tag '+(String(t.typeOfAction).toLowerCase().startsWith('auto')?'automate':'augment');
+      role.textContent=`Type of Action: ${t.typeOfAction}`;
+      tags.appendChild(role);
+      t.aiRole?.forEach(r=>{
+        const s=document.createElement('span');
+        s.className='tag';
+        s.textContent=r;
+        tags.appendChild(s);
+      });
+
+      tools.innerHTML='';output.textContent='';
+      if((!t.tools||t.tools.length===0)&&!t.output){statsSection.style.display='none';}
+      else{
+        statsSection.style.display='flex';
+        if(!t.tools||t.tools.length===0){document.getElementById('toolsCard').style.display='none';}
+        else{document.getElementById('toolsCard').style.display='block';t.tools.forEach(tt=>tools.appendChild(toolPill(tt)));}
+        if(!t.output){document.getElementById('outputCard').style.display='none';}
+        else{document.getElementById('outputCard').style.display='block';output.textContent=t.output;}
+      }
+
+      galleryPage=0;
+      renderGallery(t);
+
+      prevBtn.disabled=current===0;
+      nextBtn.disabled=current===tasks.length-1;
+      renderNav();
+    }
+
+    function renderNav(){
+      const nav=document.getElementById('stepNav');
+      nav.innerHTML='';
+      tasks.forEach((t,i)=>{
+        const b=document.createElement('button');
+        b.className='chip'+(i===current?' active':'');
+        b.textContent=`${t.id}. ${t.title}`;
+        b.onclick=()=>{current=i;saveProgress();render();};
+        nav.appendChild(b);
+      });
+    }
+
+    prevBtn.addEventListener('click',()=>{if(current>0){current--;saveProgress();render();}});
+    nextBtn.addEventListener('click',()=>{if(current<tasks.length-1){current++;saveProgress();render();}});
+    lightbox.addEventListener('click',()=>{lightbox.classList.remove('active');});
+
+    function saveProgress(){localStorage.setItem('glowflow_step',String(current));}
+    function loadProgress(){
+      const s=Number(localStorage.getItem('glowflow_step'));
+      if(!Number.isNaN(s))current=Math.min(Math.max(0,s),tasks.length-1);
+    }
+
+    loadProgress();render();
+  </script>
+</body>
+</html>
