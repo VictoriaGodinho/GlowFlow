@@ -134,8 +134,8 @@
     <div class="grid" id="gridLayout">
       <section class="card" aria-live="polite" id="leftCard">
         <div class="pad">
-          <div class="kicker" id="stepKicker">TASK 1</div>
-          <h2 id="stepTitle">Gather visual inspiration</h2>
+          <div class="kicker" id="stepKicker">INTRODUCTION</div>
+          <h2 id="stepTitle">Welcome to GlowFlow</h2>
           <div class="tags" id="tags"></div>
           <p id="stepDesc"></p>
           <div class="statrow" id="statsSection">
@@ -164,33 +164,47 @@
     </div>
   </main>
 
-  <!-- Lightbox -->
   <div id="lightbox" class="lightbox"><img src="" alt="Enlarged artifact"></div>
-
   <script>
-    const tasks=[
-     {
-  id:1,
-  title:"Gather visual inspiration",
-  kicker:"TASK 1",
-  typeOfAction:"Automate",
-  aiRole:["Leonardo AI → image generation","Pinterest → reference sourcing"],
-  description:"Kick off with wide exploration. Generate skincare still-lifes, portrait references, and textures with Leonardo AI; complement with Pinterest boards for real-world references. Human judgement filters what feels authentic to the brand.",
-  output:"A pool of images: product still-lifes, inclusive portraits, texture macros, gradient atmospheres.",
-  tools:[
-    {name:"Leonardo AI",url:"https://leonardo.ai"},
-    {name:"Pinterest",url:"https://www.pinterest.com"}
-  ],
-  evidenceDesc:"The first 9 images were generated in Leonardo AI using detailed prompts to explore tone and texture. The next 9 were manually selected from Pinterest, adding human intuition and context.",
-  images:[
-    "images/inspiration1.jpg","images/inspiration2.jpg","images/inspiration3.jpg",
-    "images/inspiration4.jpg","images/inspiration5.jpg","images/inspiration6.jpg",
-    "images/inspiration7.jpg","images/inspiration8.jpg","images/inspiration9.jpg",
-    "images/inspiration10.jpg","images/inspiration11.jpg","images/inspiration12.jpg",
-    "images/inspiration13.jpg","images/inspiration14.jpg","images/inspiration15.jpg",
-    "images/inspiration16.jpg","images/inspiration17.jpg","images/inspiration18.jpg"
-  ]
-},
+    const tasks = [
+      {
+        id: 0,
+        title: "Welcome to GlowFlow",
+        kicker: "INTRODUCTION",
+        typeOfAction: "Overview",
+        aiRole: ["Human + AI Collaboration Context"],
+        description: `GlowFlow is a mini interactive website that guides you step by step through how a designer creates a digital moodboard.
+
+A moodboard is a visual inspiration panel — a collection of images, colors, fonts, textures, and references that help convey the mood, style, and feeling behind a creative project.
+
+In this case, the project focuses on beauty and UX design. The goal of GlowFlow is to explore how artificial intelligence can assist, but not replace, the human creative process. Each stage shows where AI tools can help and where human intuition, aesthetic judgment, and storytelling remain essential.
+
+The guide is divided into seven tasks — from gathering visual inspiration to presenting the final moodboard. By navigating through them, you’ll see how technology and creativity come together to shape a modern design workflow.`,
+        output: "An overview of how GlowFlow works and what you’ll learn by exploring each task."
+      },
+
+      {
+        id:1,
+        title:"Gather visual inspiration",
+        kicker:"TASK 1",
+        typeOfAction:"Automate",
+        aiRole:["Leonardo AI → image generation","Pinterest → reference sourcing"],
+        description:"Kick off with wide exploration. Generate skincare still-lifes, portrait references, and textures with Leonardo AI; complement with Pinterest boards for real-world references. Human judgement filters what feels authentic to the brand.",
+        output:"A pool of images: product still-lifes, inclusive portraits, texture macros, gradient atmospheres.",
+        tools:[
+          {name:"Leonardo AI",url:"https://leonardo.ai"},
+          {name:"Pinterest",url:"https://www.pinterest.com"}
+        ],
+        evidenceDesc:"The first 9 images were generated in Leonardo AI using detailed prompts to explore tone and texture. The next 9 were manually selected from Pinterest, adding human intuition and context.",
+        images:[
+          "images/inspiration1.jpg","images/inspiration2.jpg","images/inspiration3.jpg",
+          "images/inspiration4.jpg","images/inspiration5.jpg","images/inspiration6.jpg",
+          "images/inspiration7.jpg","images/inspiration8.jpg","images/inspiration9.jpg",
+          "images/inspiration10.jpg","images/inspiration11.jpg","images/inspiration12.jpg",
+          "images/inspiration13.jpg","images/inspiration14.jpg","images/inspiration15.jpg",
+          "images/inspiration16.jpg","images/inspiration17.jpg","images/inspiration18.jpg"
+        ]
+      },
 
       {
         id:2,title:"Define mood & concept direction",kicker:"TASK 2",typeOfAction:"Augment",
@@ -272,7 +286,6 @@
       document.querySelector('#evidenceHeader h3').textContent=t.evidenceTitle||'Artifacts & Evidence';
       evidenceDesc.textContent=t.evidenceDesc||'';
 
-      // Task 4, 5, and 7 special layout — one big clickable image
       if(t.id===4 || t.id===5 || t.id===7){
         gallery.style.display='block';
         const img=document.createElement('img');
@@ -291,7 +304,6 @@
         return;
       }
 
-      // Default grid layout
       gallery.style.display='grid';
       const start=galleryPage*IMAGES_PER_PAGE;
       const end=start+IMAGES_PER_PAGE;
@@ -381,9 +393,11 @@
     function loadProgress(){
       const s=Number(localStorage.getItem('glowflow_step'));
       if(!Number.isNaN(s))current=Math.min(Math.max(0,s),tasks.length-1);
+      else current=0;
     }
 
     loadProgress();render();
   </script>
 </body>
 </html>
+
